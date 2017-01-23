@@ -35,7 +35,7 @@ def startDatabase(databasename): # Maak tabellen aan als deze nog niet bestaan
         c.execute('''CREATE TABLE IF NOT EXISTS accounts
                          (gebruikersnaam text UNIQUE, email text, wachtwoord text, laatste_login_datum text)''')
 
-        gegevens = ['gebruiker','gebruiker@hotmail.nl','5375','11-11-2016']
+        gegevens = ['test','test@gmail.com','test','11-11-2016']
         try:
             c.execute('''INSERT INTO accounts VALUES(?,?,?,?)''',gegevens)
         except:
