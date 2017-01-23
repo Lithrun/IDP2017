@@ -71,10 +71,3 @@ def isButtonPressed(id):
         print('Button {} Pressed'.format(id))
         return True
     return False
-
-#Test scripts
-
-while True:
-    if isButtonPressed(GPIOKnop1):
-        lamp(GPIOLampGroen,1)
-        knipperLamp(GPIOLampOranje,0.5)
