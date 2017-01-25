@@ -7,7 +7,8 @@ apparaten_lst = [
     ['Crosstrainer',[1,10,1],'apparaten/crosstrainer.jpg',0.20],
     ['Gewicht Heffen',[10,80,10],'apparaten/gewichten.jpg',0.40],
     ['Legextension', [10,80,10], 'apparaten/legextension.jpg', 0.15],
-    ['Legpress',[15,80,5],'apparaten/legpress.jpg',0.15]
+    ['Legpress',[15,80,5],'apparaten/legpress.jpg',0.15],
+    ['Stairclimber',[1,7,1],'apparaten/stairclimber.jpg',0.07]
 ]
 
 def getApparaatListFromNaam(apparaat_naam):
@@ -36,5 +37,3 @@ def bepaalCalorien(apparaat_naam, zwaarte, tijd_sec):
     calorien = formule + zwaarte_berekening * tijd_sec / 10
     #calorien = round(calorien,2)
     return calorien
-
-#print(bepaalCalorien('Fiets',1,600))
