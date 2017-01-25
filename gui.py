@@ -1,11 +1,33 @@
 # GUI
 from tkinter import *
-import sql_sportschool as sql
+from PIL import ImageTk, Image
+import threading
+import time
+import RPi.GPIO as GPIO
+
 import apparaten
 import common
 import hardware
-import threading
-from PIL import ImageTk, Image
+import sql_sportschool as sql
+
+# Standaard Variabelen
+global startSport
+startSport = 0
+
+global verbrandeCalorien
+verbrandeCalorien = 0
+
+global tijd_s
+tijd_s = 0
+
+global tijd_min
+tijd_min = 0
+
+global totale_tijd_s
+totale_tijd_s = 0
+
+global huidigMenu
+huidigMenu = ' ' 
 
 apparaten_lst = apparaten.apparaten_lst
 
@@ -62,6 +84,9 @@ def hideLoginMenu():
 
 def showApparaatMenu():
 
+    global huidigMenu
+    huidigMenu = 'Apparaat'
+
     global bovenApparaatFrame
     bovenApparaatFrame = Frame(master=root)
     bovenApparaatFrame.pack(side=TOP)
@@ -115,6 +140,9 @@ def hideApparaatMenu():
     onderApparaatFrame.destroy()
 
 def showSportMenu():
+
+    global huidigMenu
+    huidigMenu = 'Sporten'
 
     apparaat_lst = apparaten.getApparaatListFromNaam(huidigApparaat)
 
@@ -200,35 +228,25 @@ def zwaarteLager():
 
 def klaarSport():
     # sql.verstuurPrestaties()
-    global verbrandeCalorien
-    global tijd_s
-    global tijd_min
-    global totale_tijd_s
-    global timer
 
-    verbrandeCalorien = 0
-    tijd_s = 0
-    tijd_min = 0
-    totale_tijd_s = 0
-    timer = 2
+    if startSport == 0:
 
-    hideSportMenu()
-    showApparaatMenu()
+        global verbrandeCalorien
+        global tijd_s
+        global tijd_min
+        global totale_tijd_s
+        global timer
 
-global startSport
-startSport = 0
+        verbrandeCalorien = 0
+        tijd_s = 0
+        tijd_min = 0
+        totale_tijd_s = 0
+        timer = 2
 
-global verbrandeCalorien
-verbrandeCalorien = 0
-
-global tijd_s
-tijd_s = 0
-
-global tijd_min
-tijd_min = 0
-
-global totale_tijd_s
-totale_tijd_s = 0
+        hideSportMenu()
+        showApparaatMenu()
+    else:
+        pass
 
 def startSporten():
     global startSport
@@ -316,7 +334,7 @@ def volgendeApparaat():
     huidigApparaat = volgendApparaat[0]
     naamApparaatLabel['text'] = huidigApparaat
 
-    root.mainloop()
+    # root.mainloop()
 
 def vorigeApparaat():
     global huidigApparaat
@@ -344,7 +362,7 @@ def vorigeApparaat():
     huidigApparaat = volgendApparaat[0]
     naamApparaatLabel['text'] = huidigApparaat
 
-    root.mainloop()
+    # root.mainloop()
 
 def kiesApparaat():
     hideApparaatMenu()
@@ -361,7 +379,45 @@ def loginGebruiker():
     else:
         informatieLoginLabel['text'] = 'Uw inlog gegevens zijn onjuist!'
 
+def knoppen():
+        button1 = 0
+        button2 = 0
+        while True:
+                time.sleep(0.1)
+                input_1 = GPIO.input(hardware.GPIOKnop1)
+                input_2 = GPIO.input(hardware.GPIOKnop3)
+
+                # BUG: Als knop 1 wordt ingedrukt, dan wordt knop 2 ook ingedrukt
+
+                if input_1 == 0:
+                    input_2 = 1
+                elif input_2 == 0:
+                    input_1 = 1
+                
+                if input_1 == 0 and button1 == 0:
+                        button1 = 1
+                        if huidigMenu == 'Apparaat':
+                                volgendeApparaat()
+                        elif huidigMenu == 'Sporten':
+                                zwaarteHoger()
+
+                if input_1 == 1 and button1 == 1:
+                        button1 = 0
+                        print('  Button 1 released ' )
+
+                if input_2 == 0 and button2 == 0:
+                        button2 = 1
+                        if huidigMenu == 'Apparaat':
+                                vorigeApparaat()
+                        elif huidigMenu == 'Sporten':
+                                zwaarteLager()
+
+                if input_2 == 1 and button2 == 1:
+                        button2 = 0
+                        print('  Button 2 released ' )
+
 login = 0
+threading.Timer(1,knoppen).start()
 root.update_idletasks()
 root.update()
 while True: # Geeft een reactie per 1 seconde
